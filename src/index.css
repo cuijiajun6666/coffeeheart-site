@@ -1,0 +1,248 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Kanit', sans-serif;
+  font-synthesis: none;
+  color: #d7e2ea;
+  background: #0c0c0c;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: #0c0c0c;
+}
+
+body,
+#root {
+  min-width: 320px;
+  min-height: 100%;
+  background: #0c0c0c;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+img {
+  max-width: 100%;
+}
+
+::selection {
+  color: #0c0c0c;
+  background: #d7e2ea;
+}
+
+:focus-visible {
+  outline: 2px solid #d7e2ea;
+  outline-offset: 5px;
+}
+
+.site-wrapper {
+  --pointer-x: 50vw;
+  --pointer-y: 25vh;
+  position: relative;
+  overflow-x: clip;
+  background:
+    radial-gradient(circle 480px at var(--pointer-x) var(--pointer-y), rgba(142, 39, 180, 0.075), transparent 70%),
+    #0c0c0c;
+}
+
+.hero-heading {
+  color: transparent;
+  background: linear-gradient(180deg, #646973 0%, #bbccd7 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.nav-link {
+  transition: opacity 200ms ease;
+}
+
+.nav-link:hover {
+  opacity: 0.7;
+}
+
+.contact-button,
+.live-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  white-space: nowrap;
+}
+
+.contact-button {
+  padding: 0.75rem 2rem;
+  color: #fff;
+  font-size: 0.75rem;
+  background: linear-gradient(123deg, #18011f 7%, #b600a8 37%, #7621b0 72%, #be4c00 100%);
+  box-shadow: 0 4px 4px rgba(181, 1, 167, 0.25), 4px 4px 12px #7721b1 inset;
+  outline: 2px solid #fff;
+  outline-offset: -3px;
+  transition: transform 220ms ease, filter 220ms ease;
+}
+
+.contact-button:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.12);
+}
+
+.live-button {
+  padding: 0.75rem 2rem;
+  border: 2px solid #d7e2ea;
+  color: #d7e2ea;
+  font-size: 0.875rem;
+  transition: background-color 200ms ease;
+}
+
+.live-button:hover {
+  background: rgba(215, 226, 234, 0.1);
+}
+
+.decor {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.decor img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 25px 30px rgba(0, 0, 0, 0.35));
+}
+
+.decor-moon {
+  top: 4%;
+  left: 1%;
+  width: 120px;
+}
+
+.decor-object {
+  bottom: 8%;
+  left: 3%;
+  width: 100px;
+}
+
+.decor-lego {
+  top: 4%;
+  right: 1%;
+  width: 120px;
+}
+
+.decor-group {
+  right: 3%;
+  bottom: 8%;
+  width: 130px;
+}
+
+.project-image {
+  display: block;
+  width: 100%;
+  border-radius: 40px;
+  object-fit: cover;
+  background: #171717;
+}
+
+@media (min-width: 640px) {
+  .contact-button {
+    padding: 0.875rem 2.5rem;
+    font-size: 0.875rem;
+  }
+
+  .live-button {
+    padding: 0.875rem 2.5rem;
+    font-size: 1rem;
+  }
+
+  .decor-moon,
+  .decor-lego {
+    width: 160px;
+  }
+
+  .decor-moon { left: 2%; }
+  .decor-lego { right: 2%; }
+  .decor-object { left: 6%; width: 140px; }
+  .decor-group { right: 6%; width: 170px; }
+
+  .project-image {
+    border-radius: 50px;
+  }
+}
+
+@media (min-width: 768px) {
+  .contact-button {
+    padding: 1rem 3rem;
+    font-size: 1rem;
+  }
+
+  .decor-moon,
+  .decor-lego {
+    width: 210px;
+  }
+
+  .decor-moon { left: 4%; }
+  .decor-lego { right: 4%; }
+  .decor-object { left: 10%; width: 180px; }
+  .decor-group { right: 10%; width: 220px; }
+
+  .project-image {
+    border-radius: 60px;
+  }
+}
+
+@media (max-width: 639px) {
+  .contact-button svg,
+  .live-button svg {
+    display: none;
+  }
+
+  .live-button {
+    padding-inline: 1.25rem;
+    font-size: 0.68rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
