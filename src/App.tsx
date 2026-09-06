@@ -212,13 +212,13 @@ function HeroSection() {
     <section className="relative flex h-screen min-h-[680px] flex-col overflow-x-clip" id="home">
       <FadeIn as="nav" y={-20} className="glass-nav" aria-label="Primary navigation">
         <a className="nav-link" href="#about" onClick={scrollToSection('about')}>About</a>
-        <a className="nav-link" href="#expertise" onClick={scrollToSection('expertise')}>Expertise</a>
+        <a className="nav-link" href="#expertise" onClick={scrollToSection('expertise')}>Skills</a>
         <a className="nav-link" href="#projects" onClick={scrollToSection('projects')}>Projects</a>
         <a className="nav-link" href="#contact" onClick={scrollToSection('contact')}>Contact</a>
       </FadeIn>
 
-      <div className="overflow-hidden">
-        <FadeIn as="h1" delay={0.15} y={40} className="hero-heading mt-6 w-full whitespace-nowrap text-center text-[14vw] font-black uppercase leading-none tracking-tight sm:mt-4 sm:text-[15vw] md:-mt-5 md:text-[16vw] lg:text-[17.5vw]">
+      <div className="overflow-hidden pt-24 sm:pt-28 md:pt-32">
+        <FadeIn as="h1" delay={0.15} y={40} className="hero-heading w-full whitespace-nowrap text-center text-[14vw] font-black uppercase leading-none tracking-tight sm:text-[15vw] md:text-[16vw] lg:text-[17.5vw]">
           Hi, i&apos;m chris
         </FadeIn>
       </div>
@@ -412,24 +412,24 @@ function ProjectCard({ project, index }: { project: (typeof projects)[number]; i
   const scale = useTransform(scrollYProgress, [0.35, 1], [1, targetScale])
 
   return (
-    <div ref={containerRef} className="relative h-[108vh] min-h-[820px] pb-24">
+    <div ref={containerRef} className="relative h-[100svh] min-h-[680px]">
       <motion.article
-        className="sticky overflow-hidden rounded-[40px] border-2 border-[#D7E2EA] bg-[#0C0C0C] p-4 text-[#D7E2EA] sm:rounded-[50px] sm:p-6 md:rounded-[60px] md:p-8"
-        style={{ scale, top: `calc(clamp(6rem, 8vw, 8rem) + ${index * 28}px)` }}
+        className="project-card-shell sticky mx-auto flex w-full max-w-[1500px] flex-col overflow-hidden rounded-[32px] border-2 border-[#D7E2EA] bg-[#0C0C0C] p-4 text-[#D7E2EA] sm:rounded-[40px] sm:p-5 md:rounded-[48px] md:p-6"
+        style={{ scale, top: `calc(4.75rem + ${index * 14}px)` }}
       >
-        <div className="mb-5 grid grid-cols-[auto_1fr] items-end gap-4 sm:mb-6 sm:grid-cols-[auto_0.55fr_1fr_auto] sm:gap-6 md:mb-8">
-          <span className="text-[clamp(3rem,8vw,120px)] font-black leading-[0.78]">{project.number}</span>
+        <div className="mb-4 grid flex-none grid-cols-[auto_1fr] items-end gap-3 sm:mb-5 sm:grid-cols-[auto_0.55fr_1fr_auto] sm:gap-5">
+          <span className="text-[clamp(2.6rem,6.5vw,92px)] font-black leading-[0.78]">{project.number}</span>
           <span className="text-xs font-medium uppercase tracking-[0.22em] opacity-60 sm:text-sm">{project.category}</span>
-          <h3 className="col-span-2 text-[clamp(1.4rem,3.5vw,4rem)] font-medium uppercase leading-none sm:col-span-1">{project.name}</h3>
+          <h3 className="col-span-2 text-[clamp(1.25rem,2.8vw,3.25rem)] font-medium uppercase leading-none sm:col-span-1">{project.name}</h3>
           <div className="col-span-2 justify-self-end sm:col-span-1">
             <LiveProjectButton />
           </div>
         </div>
 
-        <div className="grid grid-cols-[0.4fr_0.6fr] gap-3 sm:gap-4">
-          <div className="flex flex-col gap-3 sm:gap-4">
-            <img className="project-image h-[clamp(130px,16vw,230px)]" src={project.images[0]} alt={`${project.name} project view one`} loading="lazy" />
-            <img className="project-image h-[clamp(160px,22vw,340px)]" src={project.images[1]} alt={`${project.name} project view two`} loading="lazy" />
+        <div className="project-media-grid grid min-h-0 flex-1 grid-cols-[0.4fr_0.6fr] gap-3 sm:gap-4">
+          <div className="flex min-h-0 flex-col gap-3 sm:gap-4">
+            <img className="project-image project-image-top min-h-0" src={project.images[0]} alt={`${project.name} project view one`} loading="lazy" />
+            <img className="project-image min-h-0 flex-1" src={project.images[1]} alt={`${project.name} project view two`} loading="lazy" />
           </div>
           <img className="project-image h-full min-h-0" src={project.images[2]} alt={`${project.name} project view three`} loading="lazy" />
         </div>
@@ -450,7 +450,7 @@ function ProjectsSection() {
             <ProjectCard key={project.name} project={project} index={index} />
           ))}
         </div>
-        <footer id="contact" className="relative z-30 mt-32 flex min-h-[260px] scroll-mt-24 flex-col justify-end gap-8 border-t border-white/15 pb-6 pt-16 text-[#D7E2EA] sm:mt-44 sm:flex-row sm:items-end sm:justify-between md:mt-56">
+        <footer id="contact" className="relative z-30 mt-24 flex min-h-[260px] scroll-mt-24 flex-col justify-end gap-8 border-t border-white/15 pb-6 pt-16 text-[#D7E2EA] sm:mt-32 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.22em] opacity-50">Jiajun Cui / Chris</p>
             <p className="mt-2 text-xl font-light">Software Engineering · iOS · AI</p>
