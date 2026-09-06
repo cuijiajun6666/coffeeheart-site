@@ -100,6 +100,7 @@ function scrollToSection(id: string) {
 
 function Navigation() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [activeSection, setActiveSection] = useState('about')
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
@@ -108,8 +109,31 @@ function Navigation() {
     }
   }, [menuOpen])
 
+  useEffect(() => {
+    const sections = navigationItems
+      .map((item) => document.getElementById(item.id))
+      .filter((section): section is HTMLElement => Boolean(section))
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleSection = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
+
+        if (visibleSection?.target.id) {
+          setActiveSection(visibleSection.target.id)
+        }
+      },
+      { rootMargin: '-28% 0px -58% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] },
+    )
+
+    sections.forEach((section) => observer.observe(section))
+    return () => observer.disconnect()
+  }, [])
+
   const navigateTo = (id: string) => (event: ReactMouseEvent<HTMLAnchorElement>) => {
     setMenuOpen(false)
+    setActiveSection(id)
     scrollToSection(id)(event)
   }
 
@@ -123,11 +147,23 @@ function Navigation() {
       >
         <div className="desktop-navigation liquid-glass">
           {navigationItems.map((item) => (
-            <a key={item.id} className="liquid-nav-link" href={`#${item.id}`} onClick={navigateTo(item.id)}>
-              {item.label}
+            <a
+              key={item.id}
+              className={`liquid-nav-link ${activeSection === item.id ? 'is-active' : ''}`}
+              href={`#${item.id}`}
+              onClick={navigateTo(item.id)}
+              aria-current={activeSection === item.id ? 'page' : undefined}
+            >
+              {activeSection === item.id && (
+                <motion.span
+                  className="active-navigation-pill"
+                  layoutId="active-navigation-pill"
+                  transition={{ type: 'spring', stiffness: 430, damping: 36 }}
+                />
+              )}
+              <span className="navigation-label">{item.label}</span>
             </a>
           ))}
-          <a className="navigation-cta" href="#contact" onClick={navigateTo('contact')}>Contact</a>
         </div>
 
         <nav className="social-navigation liquid-glass" aria-label="Contact links">
@@ -187,15 +223,6 @@ function Navigation() {
               {item.label}
             </a>
           ))}
-          <a
-            className="mobile-menu-contact"
-            href="#contact"
-            onClick={navigateTo('contact')}
-            style={{ transitionDelay: menuOpen ? '250ms' : '0ms' }}
-            tabIndex={menuOpen ? 0 : -1}
-          >
-            Contact
-          </a>
         </nav>
       </div>
     </>
