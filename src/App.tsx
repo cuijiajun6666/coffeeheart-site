@@ -403,20 +403,11 @@ function ExpertiseSection() {
 }
 
 function ProjectCard({ project, index }: { project: (typeof projects)[number]; index: number }) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start end', 'end start'],
-  })
-  const targetScale = 1 - (projects.length - 1 - index) * 0.03
-  const scale = useTransform(scrollYProgress, [0.35, 1], [1, targetScale])
-
   return (
-    <div ref={containerRef} className="relative h-[100svh] min-h-[680px]">
-      <motion.article
-        className="project-card-shell sticky mx-auto flex w-full max-w-[1500px] flex-col overflow-hidden rounded-[32px] border-2 border-[#D7E2EA] bg-[#0C0C0C] p-4 text-[#D7E2EA] sm:rounded-[40px] sm:p-5 md:rounded-[48px] md:p-6"
-        style={{ scale, top: `calc(4.75rem + ${index * 14}px)` }}
-      >
+    <motion.article
+      className="project-card-shell sticky mx-auto flex w-full max-w-[1500px] flex-col overflow-hidden rounded-[32px] border-2 border-[#D7E2EA] bg-[#0C0C0C] p-4 text-[#D7E2EA] sm:rounded-[40px] sm:p-5 md:rounded-[48px] md:p-6"
+      style={{ top: 'var(--project-sticky-top)', zIndex: 10 + index }}
+    >
         <div className="mb-4 grid flex-none grid-cols-[auto_1fr] items-end gap-3 sm:mb-5 sm:grid-cols-[auto_0.55fr_1fr_auto] sm:gap-5">
           <span className="text-[clamp(2.6rem,6.5vw,92px)] font-black leading-[0.78]">{project.number}</span>
           <span className="text-xs font-medium uppercase tracking-[0.22em] opacity-60 sm:text-sm">{project.category}</span>
@@ -433,8 +424,7 @@ function ProjectCard({ project, index }: { project: (typeof projects)[number]; i
           </div>
           <img className="project-image h-full min-h-0" src={project.images[2]} alt={`${project.name} project view three`} loading="lazy" />
         </div>
-      </motion.article>
-    </div>
+    </motion.article>
   )
 }
 
@@ -445,7 +435,7 @@ function ProjectsSection() {
         <FadeIn as="h2" y={40} className="hero-heading mb-16 text-center text-[clamp(3rem,12vw,160px)] font-black uppercase leading-none tracking-tight sm:mb-20 md:mb-28">
           Project
         </FadeIn>
-        <div>
+        <div className="project-stack relative">
           {projects.map((project, index) => (
             <ProjectCard key={project.name} project={project} index={index} />
           ))}

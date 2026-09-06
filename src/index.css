@@ -64,6 +64,7 @@ img {
 .site-wrapper {
   --pointer-x: 50vw;
   --pointer-y: 25vh;
+  --project-sticky-top: 4.35rem;
   position: relative;
   overflow-x: clip;
   background:
@@ -88,6 +89,7 @@ img {
 }
 
 .glass-nav {
+  isolation: isolate;
   position: fixed;
   z-index: 50;
   top: 1rem;
@@ -102,19 +104,52 @@ img {
   padding: 0.35rem 0.5rem;
   margin-inline: auto;
   color: #d7e2ea;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.34);
   border-radius: 9999px;
-  background: linear-gradient(135deg, rgba(35, 35, 38, 0.7), rgba(12, 12, 12, 0.42));
-  box-shadow: 0 16px 55px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(22px) saturate(145%);
-  -webkit-backdrop-filter: blur(22px) saturate(145%);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.025) 42%, rgba(12, 12, 14, 0.5)),
+    rgba(18, 18, 21, 0.48);
+  box-shadow:
+    0 18px 60px rgba(0, 0, 0, 0.48),
+    0 3px 12px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(32px) saturate(185%) contrast(108%);
+  -webkit-backdrop-filter: blur(32px) saturate(185%) contrast(108%);
   font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
+.glass-nav::before,
+.glass-nav::after {
+  position: absolute;
+  pointer-events: none;
+  content: '';
+  border-radius: inherit;
+}
+
+.glass-nav::before {
+  z-index: -1;
+  inset: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(110deg, rgba(255, 255, 255, 0.09), transparent 32%, transparent 72%, rgba(167, 109, 255, 0.08));
+}
+
+.glass-nav::after {
+  top: 4px;
+  right: 12%;
+  left: 12%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+  filter: blur(0.35px);
+  opacity: 0.72;
+}
+
 .glass-nav .nav-link {
+  position: relative;
+  z-index: 1;
   display: grid;
   min-height: 38px;
   padding-inline: clamp(0.65rem, 2vw, 1.25rem);
@@ -235,9 +270,15 @@ img {
 }
 
 .project-card-shell {
-  height: calc(100svh - 5.75rem);
+  height: calc(100svh - var(--project-sticky-top) - 1rem);
   max-height: 780px;
   min-height: 570px;
+  box-shadow: 0 -16px 55px rgba(0, 0, 0, 0.4);
+  transform-origin: center top;
+}
+
+.project-stack {
+  padding-bottom: 28vh;
 }
 
 .project-media-grid {
@@ -249,6 +290,9 @@ img {
 }
 
 @media (min-width: 640px) {
+  .site-wrapper {
+    --project-sticky-top: 5.35rem;
+  }
   .glass-nav {
     top: 1.25rem;
     min-height: 54px;
