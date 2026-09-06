@@ -209,9 +209,23 @@ function LiveProjectButton() {
 }
 
 function HeroSection() {
+  const heroRef = useRef<HTMLElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start'],
+  })
+  const rawBlackout = useTransform(scrollYProgress, [0, 0.92], [0, 1])
+  const blackoutOpacity = useSpring(rawBlackout, { stiffness: 120, damping: 30, mass: 0.45 })
+  const taglineLines = [
+    'A software engineer driven by',
+    'building intelligent and',
+    'unforgettable products',
+  ]
+
   return (
-    <section className="relative flex h-screen min-h-[680px] flex-col overflow-x-clip" id="home">
+    <section ref={heroRef} className="relative flex h-screen min-h-[680px] flex-col overflow-x-clip" id="home">
       <MouseScrubMannequin />
+      <motion.div className="hero-scroll-blackout" style={{ opacity: blackoutOpacity }} aria-hidden="true" />
       <FadeIn as="nav" y={-20} className="glass-nav" aria-label="Primary navigation">
         <a className="nav-link" href="#about" onClick={scrollToSection('about')}>About</a>
         <a className="nav-link" href="#expertise" onClick={scrollToSection('expertise')}>Skills</a>
@@ -219,16 +233,26 @@ function HeroSection() {
         <a className="nav-link" href="#contact" onClick={scrollToSection('contact')}>Contact</a>
       </FadeIn>
 
-      <div className="relative z-20 overflow-hidden pt-24 sm:pt-28 md:pt-32">
-        <FadeIn as="h1" delay={0.15} y={40} className="hero-heading w-full whitespace-nowrap text-center text-[14vw] font-black uppercase leading-none tracking-tight sm:text-[15vw] md:text-[16vw] lg:text-[17.5vw]">
+      <div className="hero-copy relative z-20 overflow-hidden px-6 pt-28 sm:px-8 sm:pt-32 md:px-10 md:pt-36">
+        <FadeIn as="h1" delay={0.15} y={34} className="hero-heading hero-name-heading whitespace-nowrap text-left font-black uppercase leading-none tracking-tight">
           Hi, i&apos;m chris
         </FadeIn>
+        <div className="hero-tagline mt-5 sm:mt-7" aria-label="A software engineer driven by building intelligent and unforgettable products">
+          {taglineLines.map((line, index) => (
+            <motion.span
+              key={line}
+              className="block"
+              initial={{ opacity: 0, y: 24, filter: 'blur(7px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ delay: 0.48 + index * 0.14, duration: 0.72, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {line}
+            </motion.span>
+          ))}
+        </div>
       </div>
 
-      <div className="relative z-20 mx-auto mt-auto flex w-full max-w-[1700px] items-end justify-between gap-8 px-6 pb-7 sm:pb-8 md:px-10 md:pb-10">
-        <FadeIn as="p" delay={0.35} y={20} className="max-w-[160px] text-[clamp(0.75rem,1.4vw,1.5rem)] font-light uppercase leading-snug tracking-wide text-[#D7E2EA] sm:max-w-[220px] md:max-w-[260px]">
-          a software engineer driven by building intelligent and unforgettable products
-        </FadeIn>
+      <div className="relative z-20 mx-auto mt-auto flex w-full max-w-[1700px] items-end justify-end px-6 pb-7 sm:pb-8 md:px-10 md:pb-10">
         <FadeIn delay={0.5} y={20}>
           <ContactButton />
         </FadeIn>
