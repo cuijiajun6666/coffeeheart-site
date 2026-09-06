@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from 'react'
 import { motion, useScroll, useSpring, useTransform, type MotionValue } from 'framer-motion'
-import { ArrowUpRight, Menu, X } from 'lucide-react'
+import { ArrowUpRight, Github, Linkedin, Mail, Menu, X } from 'lucide-react'
 
 const marqueeImages = [
   'https://motionsites.ai/assets/hero-space-voyage-preview-eECLH3Yc.gif',
@@ -129,6 +129,37 @@ function Navigation() {
           ))}
           <a className="navigation-cta" href="#contact" onClick={navigateTo('contact')}>Contact</a>
         </div>
+
+        <nav className="social-navigation liquid-glass" aria-label="Contact links">
+          <a
+            className="social-nav-link"
+            href="https://github.com/cuijiajun6666"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="GitHub"
+            title="GitHub"
+          >
+            <Github aria-hidden="true" />
+          </a>
+          <a
+            className="social-nav-link"
+            href="https://www.linkedin.com/in/jiajuncui"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="LinkedIn"
+            title="LinkedIn"
+          >
+            <Linkedin aria-hidden="true" />
+          </a>
+          <a
+            className="social-nav-link"
+            href="mailto:3262160489@qq.com"
+            aria-label="Email Chris"
+            title="Email Chris"
+          >
+            <Mail aria-hidden="true" />
+          </a>
+        </nav>
 
         <button
           className="mobile-menu-toggle liquid-glass"
