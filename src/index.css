@@ -137,80 +137,181 @@ img {
   opacity: 0.7;
 }
 
-.glass-nav {
-  isolation: isolate;
+.site-navigation {
   position: fixed;
-  z-index: 50;
-  top: 1rem;
+  z-index: 60;
+  top: 0;
   right: 0;
   left: 0;
   display: flex;
-  width: min(calc(100% - 2rem), 620px);
-  min-height: 50px;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.35rem 0.5rem;
-  margin-inline: auto;
+  justify-content: center;
+  padding: 1rem 1.25rem;
   color: #d7e2ea;
-  border: 1px solid rgba(255, 255, 255, 0.34);
-  border-radius: 9999px;
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.025) 42%, rgba(12, 12, 14, 0.5)),
-    rgba(18, 18, 21, 0.48);
-  box-shadow:
-    0 18px 60px rgba(0, 0, 0, 0.48),
-    0 3px 12px rgba(0, 0, 0, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.28),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(32px) saturate(185%) contrast(108%);
-  -webkit-backdrop-filter: blur(32px) saturate(185%) contrast(108%);
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
 }
 
-.glass-nav::before,
-.glass-nav::after {
+.liquid-glass {
+  position: relative;
+  overflow: hidden;
+  border: none;
+  background: rgba(255, 255, 255, 0.01);
+  background-blend-mode: luminosity;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 12px 36px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.liquid-glass::before {
   position: absolute;
+  z-index: 0;
+  inset: 0;
   pointer-events: none;
   content: '';
   border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.15) 20%, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0) 60%, rgba(255, 255, 255, 0.15) 80%, rgba(255, 255, 255, 0.45) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
 }
 
-.glass-nav::before {
-  z-index: -1;
-  inset: 2px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(110deg, rgba(255, 255, 255, 0.09), transparent 32%, transparent 72%, rgba(167, 109, 255, 0.08));
+.desktop-navigation {
+  display: none;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.35rem;
+  border-radius: 9999px;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: system-ui, sans-serif;
+  font-size: 0.875rem;
 }
 
-.glass-nav::after {
-  top: 4px;
-  right: 12%;
-  left: 12%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-  filter: blur(0.35px);
+.liquid-nav-link,
+.navigation-cta {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 1rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+  transition: opacity 200ms ease, color 200ms ease, background-color 200ms ease;
+}
+
+.liquid-nav-link:hover {
+  color: #fff;
   opacity: 0.72;
 }
 
-.glass-nav .nav-link {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  min-height: 38px;
-  padding-inline: clamp(0.65rem, 2vw, 1.25rem);
-  place-items: center;
-  border-radius: 9999px;
-  transition: opacity 200ms ease, background-color 200ms ease, color 200ms ease;
+.navigation-cta {
+  min-width: 96px;
+  color: #0c0c0c;
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
 }
 
-.glass-nav .nav-link:hover {
+.navigation-cta:hover {
   color: #fff;
-  background: rgba(255, 255, 255, 0.09);
+  background: #0c0c0c;
+}
+
+.mobile-menu-toggle {
+  position: relative;
+  z-index: 61;
+  display: grid;
+  width: 48px;
+  height: 48px;
+  flex: none;
+  place-items: center;
+  border-radius: 9999px;
+  color: #fff;
+}
+
+.menu-icon {
+  position: absolute;
+  z-index: 1;
+  transition: opacity 300ms ease, transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu-icon-in {
   opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+.menu-icon-out {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.75);
+}
+
+.menu-icon-out-reverse {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.75);
+}
+
+.mobile-menu-overlay {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding: 2rem;
+  pointer-events: none;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  opacity: 0;
+  transition: opacity 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobile-menu-overlay.is-open {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+.mobile-menu-panel {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.75rem;
+}
+
+.mobile-menu-link {
+  font-family: system-ui, sans-serif;
+  font-size: 2rem;
+  font-weight: 500;
+  line-height: 1;
+  opacity: 0;
+  transform: translateY(1rem);
+  transition: opacity 500ms cubic-bezier(0.4, 0, 0.2, 1), transform 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobile-menu-overlay.is-open .mobile-menu-link {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mobile-menu-contact {
+  display: inline-flex;
+  margin-top: 0.75rem;
+  padding: 0.8rem 1.4rem;
+  border-radius: 9999px;
+  color: #0c0c0c;
+  background: #fff;
+  font-family: system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  opacity: 0;
+  transform: scale(0.88);
+  transition: opacity 500ms cubic-bezier(0.4, 0, 0.2, 1), transform 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobile-menu-overlay.is-open .mobile-menu-contact {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .contact-button,
@@ -342,11 +443,8 @@ img {
   .site-wrapper {
     --project-sticky-top: 5.35rem;
   }
-  .glass-nav {
-    top: 1.25rem;
-    min-height: 54px;
-    padding: 0.45rem 0.6rem;
-    font-size: 0.82rem;
+  .site-navigation {
+    padding: 1.25rem 2rem;
   }
 
   .contact-button {
@@ -375,6 +473,15 @@ img {
 }
 
 @media (min-width: 768px) {
+  .desktop-navigation {
+    display: flex;
+  }
+
+  .mobile-menu-toggle,
+  .mobile-menu-overlay {
+    display: none;
+  }
+
   .contact-button {
     padding: 1rem 3rem;
     font-size: 1rem;
@@ -408,19 +515,6 @@ img {
   .hero-tagline {
     font-size: clamp(0.95rem, 4.2vw, 1.1rem);
     line-height: 1.18;
-  }
-
-  .glass-nav {
-    width: calc(100% - 1rem);
-    top: 0.5rem;
-    gap: 0;
-    padding-inline: 0.4rem;
-    font-size: 0.64rem;
-    letter-spacing: 0.065em;
-  }
-
-  .glass-nav .nav-link {
-    padding-inline: 0.55rem;
   }
 
   .contact-button svg,

@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from 'react'
 import { motion, useScroll, useSpring, useTransform, type MotionValue } from 'framer-motion'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight, Menu, X } from 'lucide-react'
 
 const marqueeImages = [
   'https://motionsites.ai/assets/hero-space-voyage-preview-eECLH3Yc.gif',
@@ -37,6 +37,11 @@ const marqueeImages = [
 
 const services = [
   {
+    name: 'Programming Languages',
+    description:
+      'Working confidently across Python, Java, C, and SQL to build application logic, data workflows, backend services, and dependable software systems.',
+  },
+  {
     name: 'iOS Development',
     description:
       'Building intuitive, production-minded iOS experiences with SwiftUI, SwiftData, thoughtful interaction design, and reliable local data flows.',
@@ -56,11 +61,12 @@ const services = [
     description:
       'Designing context-aware journeys with Mapbox, background location tracking, travel history, discovery, and personalised collections.',
   },
-  {
-    name: 'Software Systems',
-    description:
-      'Developing clear application structures across Java, C, SQL, Git, and modern engineering practices for products that remain easy to evolve.',
-  },
+]
+
+const navigationItems = [
+  { label: 'About', id: 'about' },
+  { label: 'Skills', id: 'expertise' },
+  { label: 'Projects', id: 'projects' },
 ]
 
 const projects = [
@@ -90,6 +96,79 @@ function scrollToSection(id: string) {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
   }
+}
+
+function Navigation() {
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : ''
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [menuOpen])
+
+  const navigateTo = (id: string) => (event: ReactMouseEvent<HTMLAnchorElement>) => {
+    setMenuOpen(false)
+    scrollToSection(id)(event)
+  }
+
+  return (
+    <>
+      <motion.header
+        className="site-navigation"
+        initial={{ opacity: 0, y: -18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <div className="desktop-navigation liquid-glass">
+          {navigationItems.map((item) => (
+            <a key={item.id} className="liquid-nav-link" href={`#${item.id}`} onClick={navigateTo(item.id)}>
+              {item.label}
+            </a>
+          ))}
+          <a className="navigation-cta" href="#contact" onClick={navigateTo('contact')}>Contact</a>
+        </div>
+
+        <button
+          className="mobile-menu-toggle liquid-glass"
+          type="button"
+          aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <Menu className={`menu-icon ${menuOpen ? 'menu-icon-out' : 'menu-icon-in'}`} size={23} />
+          <X className={`menu-icon ${menuOpen ? 'menu-icon-in' : 'menu-icon-out-reverse'}`} size={23} />
+        </button>
+      </motion.header>
+
+      <div className={`mobile-menu-overlay ${menuOpen ? 'is-open' : ''}`} aria-hidden={!menuOpen}>
+        <nav className="mobile-menu-panel" aria-label="Mobile navigation">
+          {navigationItems.map((item, index) => (
+            <a
+              key={item.id}
+              className="mobile-menu-link"
+              href={`#${item.id}`}
+              onClick={navigateTo(item.id)}
+              style={{ transitionDelay: menuOpen ? `${100 + index * 50}ms` : '0ms' }}
+              tabIndex={menuOpen ? 0 : -1}
+            >
+              {item.label}
+            </a>
+          ))}
+          <a
+            className="mobile-menu-contact"
+            href="#contact"
+            onClick={navigateTo('contact')}
+            style={{ transitionDelay: menuOpen ? '250ms' : '0ms' }}
+            tabIndex={menuOpen ? 0 : -1}
+          >
+            Contact
+          </a>
+        </nav>
+      </div>
+    </>
+  )
 }
 
 type FadeInProps = HTMLAttributes<HTMLElement> & {
@@ -226,12 +305,7 @@ function HeroSection() {
     <section ref={heroRef} className="relative flex h-screen min-h-[680px] flex-col overflow-x-clip" id="home">
       <MouseScrubMannequin />
       <motion.div className="hero-scroll-blackout" style={{ opacity: blackoutOpacity }} aria-hidden="true" />
-      <FadeIn as="nav" y={-20} className="glass-nav" aria-label="Primary navigation">
-        <a className="nav-link" href="#about" onClick={scrollToSection('about')}>About</a>
-        <a className="nav-link" href="#expertise" onClick={scrollToSection('expertise')}>Skills</a>
-        <a className="nav-link" href="#projects" onClick={scrollToSection('projects')}>Projects</a>
-        <a className="nav-link" href="#contact" onClick={scrollToSection('contact')}>Contact</a>
-      </FadeIn>
+      <Navigation />
 
       <div className="hero-copy relative z-20 overflow-hidden px-6 pt-28 sm:px-8 sm:pt-32 md:px-10 md:pt-36">
         <FadeIn as="h1" delay={0.15} y={34} className="hero-heading hero-name-heading whitespace-nowrap text-left font-black uppercase leading-none tracking-tight">
