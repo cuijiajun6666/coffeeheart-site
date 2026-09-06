@@ -64,6 +64,7 @@ const services = [
 ]
 
 const navigationItems = [
+  { label: 'Intro', id: 'home' },
   { label: 'About', id: 'about' },
   { label: 'Skills', id: 'expertise' },
   { label: 'Projects', id: 'projects' },
@@ -100,7 +101,7 @@ function scrollToSection(id: string) {
 
 function Navigation() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [activeSection, setActiveSection] = useState('about')
+  const [activeSection, setActiveSection] = useState('home')
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
