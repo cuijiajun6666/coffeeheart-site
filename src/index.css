@@ -87,6 +87,47 @@ img {
   opacity: 0.7;
 }
 
+.glass-nav {
+  position: fixed;
+  z-index: 50;
+  top: 1rem;
+  left: 50%;
+  display: flex;
+  width: min(calc(100% - 2rem), 760px);
+  min-height: 58px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.55rem 0.75rem;
+  color: #d7e2ea;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 9999px;
+  background: linear-gradient(135deg, rgba(35, 35, 38, 0.7), rgba(12, 12, 12, 0.42));
+  box-shadow: 0 16px 55px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(22px) saturate(145%);
+  -webkit-backdrop-filter: blur(22px) saturate(145%);
+  transform: translateX(-50%);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.glass-nav .nav-link {
+  display: grid;
+  min-height: 42px;
+  padding-inline: clamp(0.7rem, 2.4vw, 1.65rem);
+  place-items: center;
+  border-radius: 9999px;
+  transition: opacity 200ms ease, background-color 200ms ease, color 200ms ease;
+}
+
+.glass-nav .nav-link:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.09);
+  opacity: 1;
+}
+
 .contact-button,
 .live-button {
   display: inline-flex;
@@ -139,30 +180,49 @@ img {
   width: 100%;
   height: auto;
   filter: drop-shadow(0 25px 30px rgba(0, 0, 0, 0.35));
+  animation: decor-float var(--float-duration, 6s) ease-in-out var(--float-delay, 0s) infinite;
+  will-change: transform;
 }
 
 .decor-moon {
   top: 4%;
   left: 1%;
   width: 120px;
+  --float-duration: 7.2s;
+  --float-delay: -1.4s;
 }
 
 .decor-object {
   bottom: 8%;
   left: 3%;
   width: 100px;
+  --float-duration: 5.8s;
+  --float-delay: -3.1s;
 }
 
 .decor-lego {
   top: 4%;
   right: 1%;
   width: 120px;
+  --float-duration: 6.5s;
+  --float-delay: -2.2s;
 }
 
 .decor-group {
   right: 3%;
   bottom: 8%;
   width: 130px;
+  --float-duration: 7.8s;
+  --float-delay: -4.2s;
+}
+
+@keyframes decor-float {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(-1.5deg);
+  }
+  50% {
+    transform: translate3d(0, -16px, 0) rotate(2deg);
+  }
 }
 
 .project-image {
@@ -174,6 +234,13 @@ img {
 }
 
 @media (min-width: 640px) {
+  .glass-nav {
+    top: 1.5rem;
+    min-height: 66px;
+    padding: 0.65rem 0.9rem;
+    font-size: 0.95rem;
+  }
+
   .contact-button {
     padding: 0.875rem 2.5rem;
     font-size: 0.875rem;
@@ -221,6 +288,19 @@ img {
 }
 
 @media (max-width: 639px) {
+  .glass-nav {
+    width: calc(100% - 1rem);
+    top: 0.5rem;
+    gap: 0;
+    padding-inline: 0.4rem;
+    font-size: 0.66rem;
+    letter-spacing: 0.065em;
+  }
+
+  .glass-nav .nav-link {
+    padding-inline: 0.55rem;
+  }
+
   .contact-button svg,
   .live-button svg {
     display: none;
@@ -244,5 +324,9 @@ img {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .decor img {
+    animation: none !important;
   }
 }

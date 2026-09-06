@@ -84,6 +84,14 @@ const projects = [
   },
 ]
 
+function scrollToSection(id: string) {
+  return (event: ReactMouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault()
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
+  }
+}
+
 type FadeInProps = HTMLAttributes<HTMLElement> & {
   as?: ElementType
   children: ReactNode
@@ -202,23 +210,23 @@ function LiveProjectButton() {
 function HeroSection() {
   return (
     <section className="relative flex h-screen min-h-[680px] flex-col overflow-x-clip" id="home">
-      <FadeIn as="nav" y={-20} className="relative z-30 mx-auto flex w-full max-w-[1700px] items-center justify-between px-6 pt-6 text-sm font-medium uppercase tracking-wider text-[#D7E2EA] md:px-10 md:pt-8 md:text-lg lg:text-[1.4rem]" aria-label="Primary navigation">
-        <a className="nav-link" href="#about">About</a>
-        <a className="nav-link" href="#price">Price</a>
-        <a className="nav-link" href="#projects">Projects</a>
-        <a className="nav-link" href="mailto:3262160489@qq.com">Contact</a>
+      <FadeIn as="nav" y={-20} className="glass-nav" aria-label="Primary navigation">
+        <a className="nav-link" href="#about" onClick={scrollToSection('about')}>About</a>
+        <a className="nav-link" href="#expertise" onClick={scrollToSection('expertise')}>Expertise</a>
+        <a className="nav-link" href="#projects" onClick={scrollToSection('projects')}>Projects</a>
+        <a className="nav-link" href="#contact" onClick={scrollToSection('contact')}>Contact</a>
       </FadeIn>
 
       <div className="overflow-hidden">
         <FadeIn as="h1" delay={0.15} y={40} className="hero-heading mt-6 w-full whitespace-nowrap text-center text-[14vw] font-black uppercase leading-none tracking-tight sm:mt-4 sm:text-[15vw] md:-mt-5 md:text-[16vw] lg:text-[17.5vw]">
-          Hi, i&apos;m jack
+          Hi, i&apos;m chris
         </FadeIn>
       </div>
 
       <FadeIn delay={0.6} y={30} className="pointer-events-none absolute left-1/2 top-1/2 z-10 w-[280px] -translate-x-1/2 -translate-y-1/2 sm:bottom-0 sm:top-auto sm:w-[360px] sm:translate-y-0 md:w-[440px] lg:w-[520px]">
         <div className="pointer-events-auto">
           <Magnet padding={150} strength={3} activeTransition="transform 0.3s ease-out" inactiveTransition="transform 0.6s ease-in-out">
-            <img className="block h-auto w-full select-none" src="/assets/portrait.png" alt="Jack, software engineer and digital creator" draggable={false} />
+            <img className="block h-auto w-full select-none" src="/assets/portrait.png" alt="Chris, software engineer and digital creator" draggable={false} />
           </Magnet>
         </div>
       </FadeIn>
@@ -371,12 +379,12 @@ function AboutSection() {
   )
 }
 
-function ServicesSection() {
+function ExpertiseSection() {
   return (
-    <section id="price" className="rounded-t-[40px] bg-white px-5 py-20 text-[#0C0C0C] sm:rounded-t-[50px] sm:px-8 sm:py-24 md:rounded-t-[60px] md:px-10 md:py-32">
+    <section id="expertise" className="scroll-mt-24 rounded-t-[40px] bg-white px-5 py-20 text-[#0C0C0C] sm:rounded-t-[50px] sm:px-8 sm:py-24 md:rounded-t-[60px] md:px-10 md:py-32">
       <div className="mx-auto max-w-[1700px]">
         <FadeIn as="h2" y={40} className="mb-16 text-center text-[clamp(3rem,12vw,160px)] font-black uppercase leading-none tracking-tight sm:mb-20 md:mb-28">
-          Services
+          Expertise
         </FadeIn>
         <div className="mx-auto max-w-5xl border-b border-[rgba(12,12,12,0.15)]">
           {services.map((service, index) => (
@@ -404,7 +412,7 @@ function ProjectCard({ project, index }: { project: (typeof projects)[number]; i
   const scale = useTransform(scrollYProgress, [0.35, 1], [1, targetScale])
 
   return (
-    <div ref={containerRef} className="relative h-[85vh] min-h-[650px]">
+    <div ref={containerRef} className="relative h-[108vh] min-h-[820px] pb-24">
       <motion.article
         className="sticky overflow-hidden rounded-[40px] border-2 border-[#D7E2EA] bg-[#0C0C0C] p-4 text-[#D7E2EA] sm:rounded-[50px] sm:p-6 md:rounded-[60px] md:p-8"
         style={{ scale, top: `calc(clamp(6rem, 8vw, 8rem) + ${index * 28}px)` }}
@@ -442,9 +450,9 @@ function ProjectsSection() {
             <ProjectCard key={project.name} project={project} index={index} />
           ))}
         </div>
-        <footer className="flex flex-col gap-5 border-t border-white/15 pb-4 pt-10 text-[#D7E2EA] sm:flex-row sm:items-end sm:justify-between">
+        <footer id="contact" className="relative z-30 mt-32 flex min-h-[260px] scroll-mt-24 flex-col justify-end gap-8 border-t border-white/15 pb-6 pt-16 text-[#D7E2EA] sm:mt-44 sm:flex-row sm:items-end sm:justify-between md:mt-56">
           <div>
-            <p className="text-xs uppercase tracking-[0.22em] opacity-50">Jiajun Cui / Jack</p>
+            <p className="text-xs uppercase tracking-[0.22em] opacity-50">Jiajun Cui / Chris</p>
             <p className="mt-2 text-xl font-light">Software Engineering · iOS · AI</p>
           </div>
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm uppercase tracking-wider">
@@ -459,6 +467,13 @@ function ProjectsSection() {
 }
 
 function App() {
+  useEffect(() => {
+    if (window.location.hash) {
+      window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+    }
+  }, [])
+
   const handlePointerMove = (event: ReactMouseEvent<HTMLDivElement>) => {
     event.currentTarget.style.setProperty('--pointer-x', `${event.clientX}px`)
     event.currentTarget.style.setProperty('--pointer-y', `${event.clientY}px`)
@@ -469,7 +484,7 @@ function App() {
       <HeroSection />
       <MarqueeSection />
       <AboutSection />
-      <ServicesSection />
+      <ExpertiseSection />
       <ProjectsSection />
     </main>
   )
