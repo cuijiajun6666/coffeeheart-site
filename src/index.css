@@ -145,7 +145,7 @@ img {
   left: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   padding: 1rem 1.25rem;
   color: #d7e2ea;
 }
@@ -258,8 +258,8 @@ img {
   position: relative;
   z-index: 61;
   display: grid;
-  width: 48px;
-  height: 48px;
+  width: 42px;
+  height: 42px;
   flex: none;
   place-items: center;
   border-radius: 9999px;
@@ -500,6 +500,11 @@ img {
     height: 19px;
   }
 
+  .mobile-menu-toggle {
+    width: 48px;
+    height: 48px;
+  }
+
   .contact-button {
     padding: 0.875rem 2.5rem;
     font-size: 0.875rem;
@@ -526,6 +531,10 @@ img {
 }
 
 @media (min-width: 768px) {
+  .site-navigation {
+    justify-content: center;
+  }
+
   .desktop-navigation {
     display: flex;
   }
