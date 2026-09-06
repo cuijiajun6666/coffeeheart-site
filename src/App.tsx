@@ -8,7 +8,7 @@ import {
   type MouseEvent as ReactMouseEvent,
   type ReactNode,
 } from 'react'
-import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion'
+import { motion, useScroll, useSpring, useTransform, type MotionValue } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 
 const marqueeImages = [
@@ -125,62 +125,63 @@ function FadeIn({
   )
 }
 
-type MagnetProps = {
-  children: ReactNode
-  padding?: number
-  strength?: number
-  activeTransition?: string
-  inactiveTransition?: string
-}
+function MouseScrubMannequin() {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const previousX = useRef<number | null>(null)
+  const targetTime = useRef(0)
+  const seeking = useRef(false)
 
-function Magnet({
-  children,
-  padding = 150,
-  strength = 3,
-  activeTransition = 'transform 0.3s ease-out',
-  inactiveTransition = 'transform 0.6s ease-in-out',
-}: MagnetProps) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [position, setPosition] = useState({ x: 0, y: 0 })
-  const [active, setActive] = useState(false)
+  const seekToTarget = () => {
+    const video = videoRef.current
+    if (!video || !Number.isFinite(video.duration) || video.duration <= 0 || seeking.current) return
+    if (Math.abs(video.currentTime - targetTime.current) < 0.01) return
+
+    seeking.current = true
+    video.currentTime = targetTime.current
+  }
 
   useEffect(() => {
-    const onMove = (event: MouseEvent) => {
-      const bounds = ref.current?.getBoundingClientRect()
-      if (!bounds) return
+    const sensitivity = 0.8
+    const onMouseMove = (event: MouseEvent) => {
+      const video = videoRef.current
+      if (!video || !Number.isFinite(video.duration) || video.duration <= 0) return
 
-      const inside =
-        event.clientX >= bounds.left - padding &&
-        event.clientX <= bounds.right + padding &&
-        event.clientY >= bounds.top - padding &&
-        event.clientY <= bounds.bottom + padding
+      if (previousX.current === null) {
+        previousX.current = event.clientX
+        return
+      }
 
-      setActive(inside)
-      setPosition(
-        inside
-          ? {
-              x: (event.clientX - (bounds.left + bounds.width / 2)) / strength,
-              y: (event.clientY - (bounds.top + bounds.height / 2)) / strength,
-            }
-          : { x: 0, y: 0 },
-      )
+      const delta = event.clientX - previousX.current
+      previousX.current = event.clientX
+      const timeOffset = (delta / window.innerWidth) * sensitivity * video.duration
+      targetTime.current = Math.min(video.duration, Math.max(0, targetTime.current + timeOffset))
+      seekToTarget()
     }
 
-    window.addEventListener('mousemove', onMove, { passive: true })
-    return () => window.removeEventListener('mousemove', onMove)
-  }, [padding, strength])
+    window.addEventListener('mousemove', onMouseMove, { passive: true })
+    return () => window.removeEventListener('mousemove', onMouseMove)
+  }, [])
 
   return (
-    <div
-      ref={ref}
-      style={{
-        transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
-        transition: active ? activeTransition : inactiveTransition,
-        willChange: 'transform',
-      }}
-    >
-      {children}
-    </div>
+    <>
+      <video
+        ref={videoRef}
+        className="hero-scrub-video"
+        src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260826_041744_63efcd78-bf7d-4039-99e2-2461e8a61903.mp4"
+        muted
+        playsInline
+        preload="auto"
+        onLoadedMetadata={(event) => {
+          targetTime.current = event.currentTarget.currentTime
+        }}
+        onSeeked={() => {
+          seeking.current = false
+          seekToTarget()
+        }}
+        aria-label="Interactive digital mannequin controlled by horizontal mouse movement"
+      />
+      <div className="hero-video-shade" aria-hidden="true" />
+    </>
   )
 }
 
@@ -210,6 +211,7 @@ function LiveProjectButton() {
 function HeroSection() {
   return (
     <section className="relative flex h-screen min-h-[680px] flex-col overflow-x-clip" id="home">
+      <MouseScrubMannequin />
       <FadeIn as="nav" y={-20} className="glass-nav" aria-label="Primary navigation">
         <a className="nav-link" href="#about" onClick={scrollToSection('about')}>About</a>
         <a className="nav-link" href="#expertise" onClick={scrollToSection('expertise')}>Skills</a>
@@ -217,19 +219,11 @@ function HeroSection() {
         <a className="nav-link" href="#contact" onClick={scrollToSection('contact')}>Contact</a>
       </FadeIn>
 
-      <div className="overflow-hidden pt-24 sm:pt-28 md:pt-32">
+      <div className="relative z-20 overflow-hidden pt-24 sm:pt-28 md:pt-32">
         <FadeIn as="h1" delay={0.15} y={40} className="hero-heading w-full whitespace-nowrap text-center text-[14vw] font-black uppercase leading-none tracking-tight sm:text-[15vw] md:text-[16vw] lg:text-[17.5vw]">
           Hi, i&apos;m chris
         </FadeIn>
       </div>
-
-      <FadeIn delay={0.6} y={30} className="pointer-events-none absolute left-1/2 top-1/2 z-10 w-[280px] -translate-x-1/2 -translate-y-1/2 sm:bottom-0 sm:top-auto sm:w-[360px] sm:translate-y-0 md:w-[440px] lg:w-[520px]">
-        <div className="pointer-events-auto">
-          <Magnet padding={150} strength={3} activeTransition="transform 0.3s ease-out" inactiveTransition="transform 0.6s ease-in-out">
-            <img className="block h-auto w-full select-none" src="/assets/portrait.png" alt="Chris, software engineer and digital creator" draggable={false} />
-          </Magnet>
-        </div>
-      </FadeIn>
 
       <div className="relative z-20 mx-auto mt-auto flex w-full max-w-[1700px] items-end justify-between gap-8 px-6 pb-7 sm:pb-8 md:px-10 md:pb-10">
         <FadeIn as="p" delay={0.35} y={20} className="max-w-[160px] text-[clamp(0.75rem,1.4vw,1.5rem)] font-light uppercase leading-snug tracking-wide text-[#D7E2EA] sm:max-w-[220px] md:max-w-[260px]">
@@ -402,11 +396,21 @@ function ExpertiseSection() {
   )
 }
 
-function ProjectCard({ project, index }: { project: (typeof projects)[number]; index: number }) {
+function ProjectCard({ project, index, stackProgress }: { project: (typeof projects)[number]; index: number; stackProgress: MotionValue<number> }) {
+  const segmentLength = 1 / (projects.length + 0.28)
+  const segmentStart = index * segmentLength
+  const segmentEnd = (index + 1) * segmentLength
+  const targetScale = index === projects.length - 1 ? 1 : index === 0 ? 0.92 : 0.96
+  const targetY = index === projects.length - 1 ? 0 : 24
+  const rawScale = useTransform(stackProgress, [segmentStart, segmentEnd], [1, targetScale])
+  const rawY = useTransform(stackProgress, [segmentStart, segmentEnd], [0, targetY])
+  const scale = useSpring(rawScale, { stiffness: 180, damping: 28, mass: 0.35 })
+  const y = useSpring(rawY, { stiffness: 180, damping: 28, mass: 0.35 })
+
   return (
     <motion.article
       className="project-card-shell sticky mx-auto flex w-full max-w-[1500px] flex-col overflow-hidden rounded-[32px] border-2 border-[#D7E2EA] bg-[#0C0C0C] p-4 text-[#D7E2EA] sm:rounded-[40px] sm:p-5 md:rounded-[48px] md:p-6"
-      style={{ top: 'var(--project-sticky-top)', zIndex: 10 + index }}
+      style={{ top: 'var(--project-sticky-top)', zIndex: 10 + index, scale, y }}
     >
         <div className="mb-4 grid flex-none grid-cols-[auto_1fr] items-end gap-3 sm:mb-5 sm:grid-cols-[auto_0.55fr_1fr_auto] sm:gap-5">
           <span className="text-[clamp(2.6rem,6.5vw,92px)] font-black leading-[0.78]">{project.number}</span>
@@ -429,15 +433,21 @@ function ProjectCard({ project, index }: { project: (typeof projects)[number]; i
 }
 
 function ProjectsSection() {
+  const stackRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress: stackProgress } = useScroll({
+    target: stackRef,
+    offset: ['start start', 'end end'],
+  })
+
   return (
     <section id="projects" className="relative z-10 -mt-10 rounded-t-[40px] bg-[#0C0C0C] px-5 pb-20 pt-20 sm:-mt-12 sm:rounded-t-[50px] sm:px-8 sm:pt-24 md:-mt-14 md:rounded-t-[60px] md:px-10 md:pb-32 md:pt-32">
       <div className="mx-auto max-w-[1700px]">
         <FadeIn as="h2" y={40} className="hero-heading mb-16 text-center text-[clamp(3rem,12vw,160px)] font-black uppercase leading-none tracking-tight sm:mb-20 md:mb-28">
           Project
         </FadeIn>
-        <div className="project-stack relative">
+        <div ref={stackRef} className="project-stack relative">
           {projects.map((project, index) => (
-            <ProjectCard key={project.name} project={project} index={index} />
+            <ProjectCard key={project.name} project={project} index={index} stackProgress={stackProgress} />
           ))}
         </div>
         <footer id="contact" className="relative z-30 mt-24 flex min-h-[260px] scroll-mt-24 flex-col justify-end gap-8 border-t border-white/15 pb-6 pt-16 text-[#D7E2EA] sm:mt-32 sm:flex-row sm:items-end sm:justify-between">
