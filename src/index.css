@@ -229,6 +229,8 @@ img {
 .navigation-label {
   position: relative;
   z-index: 1;
+  color: var(--adaptive-ink, #fff);
+  transition: color 180ms ease;
 }
 
 .social-navigation {
@@ -259,7 +261,9 @@ img {
 .social-nav-link svg {
   width: 17px;
   height: 17px;
+  color: var(--adaptive-ink, #fff);
   stroke-width: 1.8;
+  transition: color 180ms ease;
 }
 
 .social-nav-link:hover {
@@ -283,7 +287,8 @@ img {
 .menu-icon {
   position: absolute;
   z-index: 1;
-  transition: opacity 300ms ease, transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--adaptive-ink, #fff);
+  transition: color 180ms ease, opacity 300ms ease, transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .menu-icon-in {

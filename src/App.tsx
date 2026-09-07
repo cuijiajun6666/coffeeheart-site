@@ -66,8 +66,8 @@ const services = [
 const navigationItems = [
   { label: 'Intro', id: 'home' },
   { label: 'About', id: 'about' },
-  { label: 'Skills', id: 'expertise' },
   { label: 'Projects', id: 'projects' },
+  { label: 'Skills', id: 'expertise' },
 ]
 
 const projects = [
@@ -132,6 +132,100 @@ function Navigation() {
     return () => observer.disconnect()
   }, [])
 
+  useEffect(() => {
+    const header = document.querySelector<HTMLElement>('.site-navigation')
+    if (!header) return
+
+    const canvas = document.createElement('canvas')
+    const context = canvas.getContext('2d', { willReadFrequently: true })
+    let animationFrame = 0
+    let lastSample = 0
+
+    const relativeLuminance = (red: number, green: number, blue: number) => {
+      const channel = (value: number) => {
+        const normalized = value / 255
+        return normalized <= 0.04045 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4
+      }
+      return channel(red) * 0.2126 + channel(green) * 0.7152 + channel(blue) * 0.0722
+    }
+
+    const updateAdaptiveInk = (time: number) => {
+      if (time - lastSample >= 80) {
+        lastSample = time
+        const targets = header.querySelectorAll<HTMLElement | SVGElement>('[data-adaptive-contrast]')
+        const video = document.querySelector<HTMLVideoElement>('.hero-scrub-video')
+        const hero = document.getElementById('home')
+        const expertise = document.getElementById('expertise')
+        const heroRect = hero?.getBoundingClientRect()
+        const isOverHero = Boolean(heroRect && heroRect.bottom > 0)
+        let canSampleVideo = false
+
+        if (context && video && video.readyState >= 2 && video.videoWidth > 0 && isOverHero) {
+          canvas.width = 240
+          canvas.height = Math.max(1, Math.round((window.innerHeight / window.innerWidth) * canvas.width))
+          const scale = Math.max(canvas.width / video.videoWidth, canvas.height / video.videoHeight)
+          const drawWidth = video.videoWidth * scale
+          const drawHeight = video.videoHeight * scale
+          const drawX = (canvas.width - drawWidth) * 0.7
+          const drawY = (canvas.height - drawHeight) * 0.5
+
+          try {
+            context.clearRect(0, 0, canvas.width, canvas.height)
+            context.drawImage(video, drawX, drawY, drawWidth, drawHeight)
+            canSampleVideo = true
+          } catch {
+            canSampleVideo = false
+          }
+        }
+
+        targets.forEach((target) => {
+          if (target.closest('.liquid-nav-link.is-active')) {
+            target.style.setProperty('--adaptive-ink', '#0c0c0c')
+            return
+          }
+
+          const rect = target.getBoundingClientRect()
+          const centerX = rect.left + rect.width / 2
+          const centerY = rect.top + rect.height / 2
+          let luminance = 0
+
+          if (canSampleVideo && context && hero) {
+            const sampleX = Math.max(1, Math.min(canvas.width - 2, Math.round((centerX / window.innerWidth) * canvas.width)))
+            const sampleY = Math.max(1, Math.min(canvas.height - 2, Math.round((centerY / window.innerHeight) * canvas.height)))
+
+            try {
+              const pixels = context.getImageData(sampleX - 1, sampleY - 1, 3, 3).data
+              let red = 0
+              let green = 0
+              let blue = 0
+              for (let index = 0; index < pixels.length; index += 4) {
+                red += pixels[index]
+                green += pixels[index + 1]
+                blue += pixels[index + 2]
+              }
+              const count = pixels.length / 4
+              const blackout = Math.min(1, Math.max(0, window.scrollY / (hero.offsetHeight * 0.92)))
+              const shade = 1 - Math.max(0.14, blackout)
+              luminance = relativeLuminance((red / count) * shade, (green / count) * shade, (blue / count) * shade)
+            } catch {
+              luminance = 0
+            }
+          } else if (expertise) {
+            const expertiseRect = expertise.getBoundingClientRect()
+            luminance = centerY >= expertiseRect.top && centerY <= expertiseRect.bottom ? 1 : 0
+          }
+
+          target.style.setProperty('--adaptive-ink', luminance > 0.46 ? '#0c0c0c' : '#ffffff')
+        })
+      }
+
+      animationFrame = window.requestAnimationFrame(updateAdaptiveInk)
+    }
+
+    animationFrame = window.requestAnimationFrame(updateAdaptiveInk)
+    return () => window.cancelAnimationFrame(animationFrame)
+  }, [])
+
   const navigateTo = (id: string) => (event: ReactMouseEvent<HTMLAnchorElement>) => {
     setMenuOpen(false)
     setActiveSection(id)
@@ -162,7 +256,7 @@ function Navigation() {
                   transition={{ type: 'spring', stiffness: 430, damping: 36 }}
                 />
               )}
-              <span className="navigation-label">{item.label}</span>
+              <span className="navigation-label" data-adaptive-contrast>{item.label}</span>
             </a>
           ))}
         </div>
@@ -176,7 +270,7 @@ function Navigation() {
             aria-label="GitHub"
             title="GitHub"
           >
-            <Github aria-hidden="true" />
+            <Github aria-hidden="true" data-adaptive-contrast />
           </a>
           <a
             className="social-nav-link"
@@ -186,7 +280,7 @@ function Navigation() {
             aria-label="LinkedIn"
             title="LinkedIn"
           >
-            <Linkedin aria-hidden="true" />
+            <Linkedin aria-hidden="true" data-adaptive-contrast />
           </a>
           <a
             className="social-nav-link"
@@ -194,7 +288,7 @@ function Navigation() {
             aria-label="Email Chris"
             title="Email Chris"
           >
-            <Mail aria-hidden="true" />
+            <Mail aria-hidden="true" data-adaptive-contrast />
           </a>
         </nav>
 
@@ -205,8 +299,8 @@ function Navigation() {
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((open) => !open)}
         >
-          <Menu className={`menu-icon ${menuOpen ? 'menu-icon-out' : 'menu-icon-in'}`} size={23} />
-          <X className={`menu-icon ${menuOpen ? 'menu-icon-in' : 'menu-icon-out-reverse'}`} size={23} />
+          <Menu className={`menu-icon ${menuOpen ? 'menu-icon-out' : 'menu-icon-in'}`} size={23} data-adaptive-contrast />
+          <X className={`menu-icon ${menuOpen ? 'menu-icon-in' : 'menu-icon-out-reverse'}`} size={23} data-adaptive-contrast />
         </button>
       </motion.header>
 
@@ -305,6 +399,7 @@ function MouseScrubMannequin() {
       <video
         ref={videoRef}
         className="hero-scrub-video"
+        crossOrigin="anonymous"
         src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260826_041744_63efcd78-bf7d-4039-99e2-2461e8a61903.mp4"
         muted
         playsInline
@@ -607,7 +702,16 @@ function ProjectsSection() {
             <ProjectCard key={project.name} project={project} index={index} stackProgress={stackProgress} />
           ))}
         </div>
-        <footer id="contact" className="relative z-30 mt-24 flex min-h-[260px] scroll-mt-24 flex-col justify-end gap-8 border-t border-white/15 pb-6 pt-16 text-[#D7E2EA] sm:mt-32 sm:flex-row sm:items-end sm:justify-between">
+      </div>
+    </section>
+  )
+}
+
+function ContactFooter() {
+  return (
+    <section className="bg-[#0C0C0C] px-5 sm:px-8 md:px-10">
+      <div className="mx-auto max-w-[1700px]">
+        <footer id="contact" className="relative z-30 flex min-h-[300px] scroll-mt-24 flex-col justify-end gap-8 border-t border-white/15 pb-8 pt-16 text-[#D7E2EA] sm:min-h-[360px] sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.22em] opacity-50">Jiajun Cui / Chris</p>
             <p className="mt-2 text-xl font-light">Software Engineering · iOS · AI</p>
@@ -641,8 +745,9 @@ function App() {
       <HeroSection />
       <MarqueeSection />
       <AboutSection />
-      <ExpertiseSection />
       <ProjectsSection />
+      <ExpertiseSection />
+      <ContactFooter />
     </main>
   )
 }
