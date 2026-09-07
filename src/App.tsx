@@ -149,13 +149,40 @@ function Navigation() {
       return channel(red) * 0.2126 + channel(green) * 0.7152 + channel(blue) * 0.0722
     }
 
+    const parseBackgroundColor = (value: string) => {
+      const channels = value.match(/[\d.]+/g)?.map(Number)
+      if (!channels || channels.length < 3) return null
+      return {
+        red: channels[0],
+        green: channels[1],
+        blue: channels[2],
+        alpha: channels.length > 3 ? channels[3] : 1,
+      }
+    }
+
+    const sampleDomLuminance = (x: number, y: number) => {
+      const layers = document.elementsFromPoint(x, y).filter((element) => !header.contains(element))
+
+      for (const layer of layers) {
+        let element: Element | null = layer
+        while (element) {
+          const background = parseBackgroundColor(window.getComputedStyle(element).backgroundColor)
+          if (background && background.alpha >= 0.18) {
+            return relativeLuminance(background.red, background.green, background.blue)
+          }
+          element = element.parentElement
+        }
+      }
+
+      return 0
+    }
+
     const updateAdaptiveInk = (time: number) => {
       if (time - lastSample >= 80) {
         lastSample = time
         const targets = header.querySelectorAll<HTMLElement | SVGElement>('[data-adaptive-contrast]')
         const video = document.querySelector<HTMLVideoElement>('.hero-scrub-video')
         const hero = document.getElementById('home')
-        const expertise = document.getElementById('expertise')
         const heroRect = hero?.getBoundingClientRect()
         const isOverHero = Boolean(heroRect && heroRect.bottom > 0)
         let canSampleVideo = false
@@ -185,37 +212,54 @@ function Navigation() {
           }
 
           const rect = target.getBoundingClientRect()
-          const centerX = rect.left + rect.width / 2
-          const centerY = rect.top + rect.height / 2
-          let luminance = 0
+          if (rect.width === 0 || rect.height === 0) return
 
-          if (canSampleVideo && context && hero) {
-            const sampleX = Math.max(1, Math.min(canvas.width - 2, Math.round((centerX / window.innerWidth) * canvas.width)))
-            const sampleY = Math.max(1, Math.min(canvas.height - 2, Math.round((centerY / window.innerHeight) * canvas.height)))
+          const samples: number[] = []
+          const columns = 5
+          const rows = 3
 
-            try {
-              const pixels = context.getImageData(sampleX - 1, sampleY - 1, 3, 3).data
-              let red = 0
-              let green = 0
-              let blue = 0
-              for (let index = 0; index < pixels.length; index += 4) {
-                red += pixels[index]
-                green += pixels[index + 1]
-                blue += pixels[index + 2]
+          for (let row = 0; row < rows; row += 1) {
+            for (let column = 0; column < columns; column += 1) {
+              const x = rect.left + rect.width * ((column + 0.5) / columns)
+              const y = rect.top + rect.height * ((row + 0.5) / rows)
+
+              if (canSampleVideo && context && hero) {
+                const sampleX = Math.max(1, Math.min(canvas.width - 2, Math.round((x / window.innerWidth) * canvas.width)))
+                const sampleY = Math.max(1, Math.min(canvas.height - 2, Math.round((y / window.innerHeight) * canvas.height)))
+
+                try {
+                  const pixels = context.getImageData(sampleX - 1, sampleY - 1, 3, 3).data
+                  let red = 0
+                  let green = 0
+                  let blue = 0
+                  for (let index = 0; index < pixels.length; index += 4) {
+                    red += pixels[index]
+                    green += pixels[index + 1]
+                    blue += pixels[index + 2]
+                  }
+                  const count = pixels.length / 4
+                  const blackout = Math.min(1, Math.max(0, window.scrollY / (hero.offsetHeight * 0.92)))
+                  const shade = 1 - Math.max(0.14, blackout)
+                  samples.push(relativeLuminance((red / count) * shade, (green / count) * shade, (blue / count) * shade))
+                } catch {
+                  samples.push(sampleDomLuminance(x, y))
+                }
+              } else {
+                samples.push(sampleDomLuminance(x, y))
               }
-              const count = pixels.length / 4
-              const blackout = Math.min(1, Math.max(0, window.scrollY / (hero.offsetHeight * 0.92)))
-              const shade = 1 - Math.max(0.14, blackout)
-              luminance = relativeLuminance((red / count) * shade, (green / count) * shade, (blue / count) * shade)
-            } catch {
-              luminance = 0
             }
-          } else if (expertise) {
-            const expertiseRect = expertise.getBoundingClientRect()
-            luminance = centerY >= expertiseRect.top && centerY <= expertiseRect.bottom ? 1 : 0
           }
 
-          target.style.setProperty('--adaptive-ink', luminance > 0.46 ? '#0c0c0c' : '#ffffff')
+          const averageLuminance = samples.reduce((total, value) => total + value, 0) / samples.length
+          const previousTone = target.getAttribute('data-contrast-tone')
+          const nextTone = averageLuminance >= 0.56
+            ? 'dark'
+            : averageLuminance <= 0.38
+              ? 'light'
+              : previousTone || 'light'
+
+          target.setAttribute('data-contrast-tone', nextTone)
+          target.style.setProperty('--adaptive-ink', nextTone === 'dark' ? '#0c0c0c' : '#ffffff')
         })
       }
 
