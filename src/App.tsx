@@ -89,6 +89,22 @@ const projects = [
     name: 'YumTrip',
     images: ['/assets/project-03a.webp', '/assets/project-03b.webp', '/assets/project-03c.webp'],
   },
+  {
+    number: '04',
+    category: 'Full Stack + Maps',
+    name: 'Roof Replacement',
+    description:
+      'RenoPilot roofing estimator. Trace roof planes and gutters on a MapLibre map, apply pitch for true surface area, then price steel panels, labour and GST into a printable quote. Next.js, Payload CMS, PostgreSQL.',
+    images: ['/assets/project-04a.webp', '/assets/project-04b.webp', '/assets/project-04c.webp'],
+  },
+  {
+    number: '05',
+    category: '3D Web App',
+    name: 'Bathroom Designer',
+    description:
+      'RenoPilot bathroom planner. Set out tiles wall by wall with every cut measured, place fixtures on a 2D plan and walk around them in WebGL 3D, then export a costed materials report.',
+    images: ['/assets/project-05a.webp', '/assets/project-05b.webp', '/assets/project-05c.webp'],
+  },
 ]
 
 function scrollToSection(id: string) {
@@ -716,6 +732,10 @@ function ProjectCard({ project, index, stackProgress }: { project: (typeof proje
             <LiveProjectButton />
           </div>
         </div>
+
+        {'description' in project && (
+          <p className="mb-4 max-w-4xl flex-none text-sm leading-snug opacity-70 sm:mb-5 sm:text-base">{project.description}</p>
+        )}
 
         <div className="project-media-grid grid min-h-0 flex-1 grid-cols-[0.4fr_0.6fr] gap-3 sm:gap-4">
           <div className="flex min-h-0 flex-col gap-3 sm:gap-4">
