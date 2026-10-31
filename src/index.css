@@ -463,15 +463,17 @@ img {
 .project-image {
   display: block;
   width: 100%;
-  border-radius: 40px;
+  height: 100%;
+  min-height: 0;
+  border-radius: 18px;
   object-fit: cover;
   background: #171717;
 }
 
 .project-card-shell {
-  height: calc(100svh - var(--project-sticky-top) - 1rem);
-  max-height: 780px;
-  min-height: 570px;
+  height: calc(100svh - var(--project-sticky-top) - 3.5rem);
+  max-height: 680px;
+  min-height: 520px;
   box-shadow: 0 -16px 55px rgba(0, 0, 0, 0.4);
   transform-origin: center top;
 }
@@ -480,12 +482,37 @@ img {
   padding-bottom: 28vh;
 }
 
-.project-media-grid {
-  max-height: 590px;
+/* Mobile: intro, hero, then the two thumbnails. From md: intro + thumbs on the left, hero fills the right. */
+.project-body {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas: 'intro' 'hero' 'thumbs';
 }
 
-.project-image-top {
-  flex: 0 0 40%;
+.project-body.is-media-only {
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas: 'hero' 'thumbs';
+}
+
+.project-intro {
+  grid-area: intro;
+}
+
+.project-hero {
+  grid-area: hero;
+}
+
+.project-thumbs {
+  grid-area: thumbs;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: inherit;
+}
+
+.project-thumbs .project-image {
+  aspect-ratio: 4 / 3;
 }
 
 @media (min-width: 640px) {
@@ -538,7 +565,11 @@ img {
   .decor-group { right: 6%; width: 170px; }
 
   .project-image {
-    border-radius: 50px;
+    border-radius: 22px;
+  }
+
+  .project-body {
+    gap: 1rem;
   }
 }
 
@@ -572,7 +603,44 @@ img {
   .decor-group { right: 10%; width: 220px; }
 
   .project-image {
-    border-radius: 60px;
+    border-radius: 26px;
+  }
+
+  /* Tablet: intro across the top, stacked thumbnails beside the hero. */
+  .project-body {
+    grid-template-columns: minmax(0, 0.4fr) minmax(0, 0.6fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+      'intro intro'
+      'thumbs hero';
+  }
+
+  .project-body.is-media-only {
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-areas: 'thumbs hero';
+  }
+
+  .project-thumbs {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+
+  .project-thumbs .project-image {
+    aspect-ratio: auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* Desktop: intro top-left, thumbnails fill the rest of the left column, hero fills the right. */
+  .project-body {
+    grid-template-areas:
+      'intro hero'
+      'thumbs hero';
+  }
+
+  .project-body:not(.is-media-only) .project-thumbs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr);
   }
 }
 

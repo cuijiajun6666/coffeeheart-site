@@ -94,7 +94,8 @@ const projects = [
     category: 'Full Stack + Maps',
     name: 'Roof Replacement',
     description:
-      'RenoPilot roofing estimator. Trace roof planes and gutters on a MapLibre map, apply pitch for true surface area, then price steel panels, labour and GST into a printable quote. Next.js, Payload CMS, PostgreSQL.',
+      'RenoPilot roofing estimator. Trace roof planes and gutters on a live map, apply pitch for true surface area, then price steel panels, labour and GST into a printable quote.',
+    tags: ['Next.js', 'Payload CMS', 'PostgreSQL', 'MapLibre'],
     images: ['/assets/project-04a.webp', '/assets/project-04b.webp', '/assets/project-04c.webp'],
   },
   {
@@ -103,6 +104,7 @@ const projects = [
     name: 'Bathroom Designer',
     description:
       'RenoPilot bathroom planner. Set out tiles wall by wall with every cut measured, place fixtures on a 2D plan and walk around them in WebGL 3D, then export a costed materials report.',
+    tags: ['Three.js', 'WebGL', 'Canvas 2D', 'Cost engine'],
     images: ['/assets/project-05a.webp', '/assets/project-05b.webp', '/assets/project-05c.webp'],
   },
 ]
@@ -724,7 +726,7 @@ function ProjectCard({ project, index, stackProgress }: { project: (typeof proje
       className="project-card-shell sticky mx-auto flex w-full max-w-[1500px] flex-col overflow-hidden rounded-[32px] border-2 border-[#D7E2EA] bg-[#0C0C0C] p-4 text-[#D7E2EA] sm:rounded-[40px] sm:p-5 md:rounded-[48px] md:p-6"
       style={{ top: 'var(--project-sticky-top)', zIndex: 10 + index, scale, y }}
     >
-        <div className="mb-4 grid flex-none grid-cols-[auto_1fr] items-end gap-3 sm:mb-5 sm:grid-cols-[auto_0.55fr_1fr_auto] sm:gap-5">
+        <div className="mb-4 grid flex-none grid-cols-[auto_1fr] items-end gap-3 sm:mb-5 md:mb-6 sm:grid-cols-[auto_0.55fr_1fr_auto] sm:gap-5">
           <span className="text-[clamp(2.6rem,6.5vw,92px)] font-black leading-[0.78]">{project.number}</span>
           <span className="text-xs font-medium uppercase tracking-[0.22em] opacity-60 sm:text-sm">{project.category}</span>
           <h3 className="col-span-2 text-[clamp(1.25rem,2.8vw,3.25rem)] font-medium uppercase leading-none sm:col-span-1">{project.name}</h3>
@@ -733,16 +735,24 @@ function ProjectCard({ project, index, stackProgress }: { project: (typeof proje
           </div>
         </div>
 
-        {'description' in project && (
-          <p className="mb-4 max-w-4xl flex-none text-sm leading-snug opacity-70 sm:mb-5 sm:text-base">{project.description}</p>
-        )}
-
-        <div className="project-media-grid grid min-h-0 flex-1 grid-cols-[0.4fr_0.6fr] gap-3 sm:gap-4">
-          <div className="flex min-h-0 flex-col gap-3 sm:gap-4">
-            <img className="project-image project-image-top min-h-0" src={project.images[0]} alt={`${project.name} project view one`} loading="lazy" />
-            <img className="project-image min-h-0 flex-1" src={project.images[1]} alt={`${project.name} project view two`} loading="lazy" />
+        <div className={`project-body min-h-0 flex-1 ${'description' in project ? '' : 'is-media-only'}`}>
+          {'description' in project && (
+            <div className="project-intro">
+              <p className="text-sm leading-snug opacity-75 sm:text-base md:text-[clamp(1rem,1.4vw,1.35rem)] md:leading-relaxed">{project.description}</p>
+              <ul className="mt-3 flex flex-wrap gap-2 md:mt-5" aria-label={`${project.name} stack`}>
+                {project.tags?.map((tag) => (
+                  <li key={tag} className="rounded-full border border-white/20 px-3 py-1 text-[11px] uppercase tracking-[0.14em] opacity-70 sm:text-xs">
+                    {tag}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          <div className="project-thumbs">
+            <img className="project-image" src={project.images[0]} alt={`${project.name} project view one`} loading="lazy" />
+            <img className="project-image" src={project.images[1]} alt={`${project.name} project view two`} loading="lazy" />
           </div>
-          <img className="project-image h-full min-h-0" src={project.images[2]} alt={`${project.name} project view three`} loading="lazy" />
+          <img className="project-image project-hero" src={project.images[2]} alt={`${project.name} project view three`} loading="lazy" />
         </div>
     </motion.article>
   )
