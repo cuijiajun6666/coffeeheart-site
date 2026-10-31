@@ -471,11 +471,15 @@ img {
 }
 
 .project-card-shell {
-  height: calc(100svh - var(--project-sticky-top) - 3.5rem);
-  max-height: 680px;
-  min-height: 520px;
+  --project-card-height: clamp(520px, calc(100svh - var(--project-sticky-top) - 3.5rem), 680px);
+  height: var(--project-card-height);
   box-shadow: 0 -16px 55px rgba(0, 0, 0, 0.4);
   transform-origin: center top;
+}
+
+/* Keep the next card below the fold until the current one has settled, plus a short dwell. */
+.project-card-shell + .project-card-shell {
+  margin-top: calc(max(0px, 100svh - var(--project-sticky-top) - var(--project-card-height)) + 12svh);
 }
 
 .project-stack {
